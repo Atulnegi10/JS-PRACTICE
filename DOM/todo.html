@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>replit</title>
+  <link href="style.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+  <h1>Todo list</h1>
+  <div id="todos">
+    <div id="todo-1">
+      <h4>1. Take class</h4>
+      <button onclick="deleteTodo(1)">delete</button>
+    </div>
+    <div id="todo-2">
+      <h4>2. Go out to eat</h4>
+      <button onclick="deleteTodo(2)">delete</button>
+    </div>
+  </div>
+  <div>
+    <input  id = "inp" type="text"></input>
+    <button onclick="addtodo()">Add Todo</button>
+  </div>
+</body>
+
+<script>
+  function deleteTodo(index) {
+    const element = document.getElementById("todo-" + index);
+    element.parentNode.removeChild(element);
+  }
+  counter = 3;
+  function addtodo(){
+    const inputel = document.getElementById("inp");
+    const parentel = document.getElementById("todos");
+    const textdiv = document.createElement("div");
+
+     textdiv.id = "todo-" + counter; 
+     
+    textdiv.innerHTML = `
+    <h4>${counter}. ${inputel.value}</h4>
+     <button onclick="deleteTodo(${counter})">delete</button>
+    `;
+    parentel.appendChild(textdiv);
+     inputel.value = "";
+    counter++;
+  }
+</script>
+
+</html>
