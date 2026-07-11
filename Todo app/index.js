@@ -5,6 +5,8 @@ const path = require("path");
 const app = express();
 
 app.use(express.json());
+const JWT_SECRET = "randomatul";
+const users = [];
 
 app.get("/",function(req,res){
   res.sendFile(path.join(__dirname+"index.html"));
@@ -33,3 +35,57 @@ app.post("/signup", function(req, res) {
         message: "Signup successful"
     });
 });
+
+app.post("/signin",function(req,res){
+
+    const usernme = req.body.usernmae;
+    const password = req.body.password;
+
+    const founduser = users.find(u => u.username === username && u.password === password);
+
+    if(founduser){
+        const token = jwt.sign({username},JWT_SECRET);
+
+        res.json({
+            token: token
+        });
+    }else{
+        res.json({
+            message:"invalid username or password"
+        })
+    }
+});
+
+function auth(req,res,next){
+    const token = req.headers.token;
+
+    const decoded = jwt.verify(token,JWT_SECRET);
+    req.usernmae = decoded.username;
+    next();
+}
+
+app.post("/todo",function(req,res){
+
+    const title = req.body.title;
+
+    const user = users.find(u => u.username === req.username);
+
+    user.todos.push(({
+        id:Date.now(),
+        title:title,
+        done: false
+    }));
+
+    res.json({
+        message: "todo added"
+    })
+});
+
+app.get("/todo",function(req,res){
+
+    const user = users.find(u => u.username === req.username);
+
+    res.json(
+        user.todos
+    )
+})
