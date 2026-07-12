@@ -1,3 +1,3 @@
 git add .
-git commit -m "Added JWT authentication project"
+git commit -m "added mark as done todo"
 git push

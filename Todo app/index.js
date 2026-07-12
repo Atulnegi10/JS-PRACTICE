@@ -88,4 +88,30 @@ app.get("/todo",function(req,res){
     res.json(
         user.todos
     )
-})
+});
+
+app.put("/todo", auth, function(req, res) {
+
+    const id = req.body.id;
+
+    const user = users.find(
+        u => u.username === req.username
+    );
+
+    const todo = user.todos.find(
+        t => t.id === id
+    );
+
+    if (!todo) {
+        return res.status(404).json({
+            message: "Todo not found"
+        });
+    }
+
+    todo.done = true;
+
+    res.json({
+        message: "Todo marked as done"
+    });
+
+});
