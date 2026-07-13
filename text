@@ -1,3 +1,3 @@
 git add .
-git commit -m "added mark as done todo"
+git commit -m "completed todo app"
 git push

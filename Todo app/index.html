@@ -3,27 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>todo app</title>
+  <title>Todo App</title>
 </head>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.7/axios.min.js"></script>
+
 <script>
-  async function signup(){
 
-    const username = document.getElementById(signup-username);
-    const password = document.getElementById(signup-password);
+async function signup(){
+    const username = document.getElementById("signup-username").value;
+    const password = document.getElementById("signup-password").value;
 
-    await axios.post("",{
-      username,password
+    await axios.post("http://localhost:3000/signup",{
+        username,
+        password
     });
 
-    alert("signup successfull");
-  };
+    alert("Signup Successful");
+}
 
-  async function signin(){
+async function signin(){
 
     const username = document.getElementById("signin-username").value;
     const password = document.getElementById("signin-password").value;
-
     const response = await axios.post(
         "http://localhost:3000/signin",
         {
@@ -31,59 +33,145 @@
             password
         }
     );
-     
-    localStorage.setItem("token",response.data.token);
-    alert("signin successfull");
-    gettodos();
-    };
 
-    async function createtodos(){
-       const title = document.getElementById(title).value;
+    localStorage.setItem("token", response.data.token);
+    alert("Signin Successful");
+    getTodos();
+}
 
-       await axios.post("",{title},{
-        Headers:{ token:localStorage.getItem(token);
+async function createTodo(){
+
+    const title = document.getElementById("todo-title").value;
+
+    await axios.post(
+        "http://localhost:3000/todo",
+        {
+            title
+        },
+        {
+            headers:{
+                token: localStorage.getItem("token")
+            }
         }
-      }
-       );
-       document.getElementById("todo-title").value="";
-       gettodos();
-    };
+    );
+    document.getElementById("todo-title").value = "";
+    getTodos();
+}
 
-    async function gettodos(){
-      
-      const response = axios.get("",{
-        headers:{
-          token: localStorage.getItem("token");
+async function getTodos(){
+
+    const response = await axios.get(
+        "http://localhost:3000/todo",
+        {
+            headers:{
+                token: localStorage.getItem("token")
+            }
         }
-      });
+    );
 
-      const todos = response.data;
-      const tododiv = document.getElementById("todos");
+    const todos = response.data;
 
-      tododiv.innerHTML = "";
-        todos.forEach(function(todo){
+    const todoDiv = document.getElementById("todos");
+
+    todoDiv.innerHTML = "";
+
+    todos.forEach(function(todo){
 
         todoDiv.innerHTML += `
-            <div>
-                ${todo.title}
-            </div>
+        <div>
+
+            <h3>${todo.title}</h3>
+
+            <p>
+                Status :
+                ${todo.done ? "Completed " : "Pending "}
+            </p>
+
+            <button onclick="markDone(${todo.id})">
+               Mark Done
+            </button>
+
+            <button onclick="deleteTodo(${todo.id})">
+                Delete
+            </button>
+
+            <button onclick="updateTodo(${todo.id})">
+                Update
+            </button>
+            <hr>
+
+        </div>
         `;
 
     });
-    }
-  
+}
+
+async function markDone(id){
+    await axios.put(
+        "http://localhost:3000/todo",
+        {
+            id
+        },
+        {
+            headers:{
+                token: localStorage.getItem("token")
+            }
+        }
+    );
+    getTodos();
+}
+
+async function deleteTodo(id){
+
+    await axios.delete(
+        "http://localhost:3000/todo",
+        {
+            data:{
+                id
+            },
+            headers:{
+                token: localStorage.getItem("token")
+            }
+        }
+    );
+
+    getTodos();
+}
+
+async function updateTodo(id){
+
+    const newTitle = prompt("Enter new title");
+
+    await axios.put(
+        "http://localhost:3000/todo/update",
+        {
+            id,
+            title: newTitle
+        },
+        {
+            headers:{
+                token: localStorage.getItem("token")
+            }
+        }
+    );
+
+    getTodos();
+}
+
 </script>
+
 <body>
-  <h2>Signup</h2>
+
+<h2>Signup</h2>
 
 <input
 id="signup-username"
-placeholder="username">
+placeholder="Username">
 
 <input
 id="signup-password"
 type="password"
-placeholder="password">
+placeholder="Password">
 
 <button onclick="signup()">
 Signup
@@ -95,12 +183,12 @@ Signup
 
 <input
 id="signin-username"
-placeholder="username">
+placeholder="Username">
 
 <input
 id="signin-password"
 type="password"
-placeholder="password">
+placeholder="Password">
 
 <button onclick="signin()">
 Signin
@@ -114,7 +202,7 @@ Signin
 id="todo-title"
 placeholder="Todo Title">
 
-<button onclick="createtodo()">
+<button onclick="createTodo()">
 Add Todo
 </button>
 
@@ -125,5 +213,6 @@ Add Todo
 <div id="todos">
 
 </div>
+
 </body>
 </html>
