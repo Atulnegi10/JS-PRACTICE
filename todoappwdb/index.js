@@ -2,6 +2,7 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 const {UserModel,TodoModel} = require("./db")
 const jwt = require("jsonwebtoken");
+const {z} = require("zod"); 
 
 const JWT_SECRET = "atul123";
 const mongoose = require("mongoose");
@@ -12,6 +13,23 @@ const app = express();
 app.use(express.json());
 
 app.post("/signup", async function(req,res){
+  
+  try{
+
+    const requiredbody = z.object({
+      email : z.string().min(3).max(100).email(),
+      name : z.string().min(3).max(100),
+      password : z.string().min(3).max(100)
+    })
+
+    const parsedwithsuccess = requiredbody.safeParse(req.body);
+
+    if(!parsedwithsuccess.success){
+      res.json({
+        message: "incorrect format"
+      });
+      return;
+    }
    const email = req.body.email;
    const password = req.body.password;
    const name = req.body.name;
@@ -28,6 +46,11 @@ app.post("/signup", async function(req,res){
    res.json({
     message: "user logged in"
    })
+  }catch(e){
+     res.status(500).json({
+            message: "Error while signing up"            
+        });
+  }
 
 });
 
@@ -38,8 +61,10 @@ app.post("/signin", async function(req,res){
    const user =  await UserModel.findOne({
     email : email
    });
+   
+   
 
-   const passwordmatch = bcrypt.compare(password,user.password);
+   const passwordmatch = await bcrypt.compare(password,user.password);
 
    if(user && passwordmatch){
     const token = jwt.sign({
@@ -61,7 +86,7 @@ app.post("/todos",auth,async function(req,res){
   const done = req.body.done;
 
   await TodoModel.create({
-        userID,
+        userId : userID,
         title,
         done
     });
@@ -99,11 +124,6 @@ function auth(req,res,next){
     })
   }
   }
-
-  module.exports = {
-    auth,
-    JWT_SECRET
-}
 
 
 app.listen(3000, () => {

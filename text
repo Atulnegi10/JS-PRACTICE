@@ -1,5 +1,5 @@
 git add .
-git commit -m "implemented hashing using bcrypt"
+git commit -m "implemented zor "
 git push
 
 natul8514_db_user
