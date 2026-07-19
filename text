@@ -1,8 +1,8 @@
 git add .
-git commit -m "STARTED TODO APP WITH MONGO DB DATABASE"
+git commit -m "implemented hashing using bcrypt"
 git push
 
 natul8514_db_user
 pk0TPZpxbFZ7noGj
 
-=
+mongodb+srv://natul8514_db_user:<pk0TPZpxbFZ7noGj>@cluster0.wqjtwgg.mongodb.net/
